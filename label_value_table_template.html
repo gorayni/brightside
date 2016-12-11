@@ -1,0 +1,9 @@
+<b>{{ title }}</b>
+<table>
+{% for label_and_value in labels_and_values %}
+  <tr>
+    <td><b>{{label_and_value[0]}}</b></td>
+    <td>{{label_and_value[1]}}</td>    
+  </tr>
+{% endfor %}
+</table>

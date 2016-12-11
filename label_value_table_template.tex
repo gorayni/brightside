@@ -1,0 +1,7 @@
+{{title}}
+\begin{tabular}{ | c | c |}
+\hline
+{% for label, value in labels_and_values %}
+\textbf{ {{label}}} & {{value}} \\ \hline
+{% endfor %}
+\end{tabular}
