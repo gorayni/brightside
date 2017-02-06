@@ -1,3 +1,5 @@
+from __future__ import division
+
 import inspect
 import os
 import warnings
@@ -62,8 +64,8 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, n
     # normalize confusion matrix
     if normalize:
         num_instances_per_class = cm.sum(axis=1)
-        zero_indices = np.where(num_instances_per_class == 0)
-        if np.any(zero_indices):
+        zero_indices = num_instances_per_class == 0
+        if any(zero_indices):
             num_instances_per_class[zero_indices] = 1
             warnings.warn('One or more classes does not have instances')
         cm = cm / num_instances_per_class[:, np.newaxis]
@@ -74,10 +76,7 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, n
     ax.set_aspect(1)
 
     sns.heatmap(cm, annot=annot, cmap=cmap, linewidths=linewidths).get_figure()
-
-    num_labels = len(labels)
-
-    plt.yticks(range(num_labels), labels[::-1])
+    plt.yticks(xrange(len(labels)), labels[::-1])
     plt.xticks([], [])
     for tick in ax.yaxis.get_major_ticks():
         tick.label.set_fontsize(label_size)
