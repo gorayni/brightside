@@ -1,5 +1,6 @@
 import inspect
 import os
+import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -61,6 +62,10 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, n
     # normalize confusion matrix
     if normalize:
         num_instances_per_class = cm.sum(axis=1)
+        zero_indices = np.where(num_instances_per_class == 0)
+        if np.any(zero_indices):
+            num_instances_per_class[zero_indices] = 1
+            warnings.warn('One or more classes does not have instances')
         cm = cm / num_instances_per_class[:, np.newaxis]
 
     fig = plt.figure(figsize=figsize)
