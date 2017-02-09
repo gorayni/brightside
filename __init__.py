@@ -58,7 +58,7 @@ class Bold():
 
 
 def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, normalize=True, annot=False, cmap='jet',
-                          label_size=10, linewidths=0):
+                          ticks_size=10, linewidths=0, show_yticks=True, show_xticks=False):
     if not figsize:
         figsize = (5, 5)
 
@@ -79,10 +79,17 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, n
     ax.set_aspect(1)
 
     sns.heatmap(cm, annot=annot, cmap=cmap, linewidths=linewidths).get_figure()
-    plt.yticks(xrange(len(labels)), labels[::-1])
-    plt.xticks([], [])
-    for tick in ax.yaxis.get_major_ticks():
-        tick.label.set_fontsize(label_size)
+    if show_yticks:
+        plt.yticks(xrange(len(labels)), labels[::-1], fontsize=ticks_size)
+    else:
+        plt.yticks([], [])
+
+    if show_xticks:
+        ax.xaxis.tick_top()
+        plt.xticks(xrange(len(labels)), labels, rotation='vertical', fontsize=ticks_size)
+    else:
+        plt.xticks([], [])
+
     return fig, ax
 
 
