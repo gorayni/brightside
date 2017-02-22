@@ -122,6 +122,29 @@ def plot_datasets_summary(stats, figsize=None, ylabel="Number of Instances", xla
     return fig, ax
 
 
+def plot_accuracy(train_acc, val_acc, figsize=None):
+    epoch = np.arange(1, len(train_acc) + 1)
+
+    if not figsize:
+        figsize = (1, 1)
+
+    sns.set_style("whitegrid", {'axes.edgecolor': '.1', 'axes.linewidth': 0.8})
+    sns.set_context("notebook", font_scale=1, rc={"lines.linewidth": 1})
+
+    fig, ax = plt.subplots(1, 1, figsize=figsize, sharex=True)
+    plt.grid(b=True, which='major', color='#555555', linestyle=':', linewidth=0.8)
+    plt.plot(epoch, train_acc, linewidth=1.25, linestyle='-', marker='o', markersize=4, label="Training")
+    plt.plot(epoch, val_acc, linewidth=1.25, linestyle='-', marker='o', markersize=4, label="Validation")
+    plt.ylim(0, 1)
+    plt.yticks(np.linspace(0, 1, 11, endpoint=True))
+
+    plt.ylabel(u'Accuracy', fontweight='bold', fontsize=12)
+    plt.xlabel(u'Epoch', fontweight='bold', fontsize=12)
+    plt.legend(loc=4, fontsize=11, frameon=True)
+
+    return fig, ax
+
+
 def print_attribute(tag, value):
     display(Attribute(tag, value))
 
