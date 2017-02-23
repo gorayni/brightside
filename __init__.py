@@ -57,13 +57,32 @@ class Bold():
         return self.latex
 
 
+def map_new_categories(categories, groundtruth, predictions, labels, other_label='other'):
+    categories = sorted(list(categories))
+
+    # Creating new categories vectorization function
+    new_categories = {cat: i for i, cat in enumerate(categories)}
+    other_category = len(new_categories)
+
+    def map_function(x):
+        return new_categories.get(x, other_category)
+
+    to_new_categories = np.vectorize(map_function)
+
+    new_groundtruth = to_new_categories(groundtruth)
+    new_predictions = to_new_categories(predictions)
+    new_labels = [labels[i] for i in categories]
+    new_labels.append(other_label)
+
+    return new_groundtruth, new_predictions, new_labels
+
+
 def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, normalize=True, annot=False, cmap='jet',
-                          ticks_size=10, linewidths=0, show_yticks=True, show_xticks=False):
+                          ticks_size=None, linewidths=0, show_yticks=True, show_xticks=False):
     if not figsize:
         figsize = (5, 5)
 
     cm = metrics.confusion_matrix(true_labels, predicted_labels)
-
     # normalize confusion matrix
     if normalize:
         num_instances_per_class = cm.sum(axis=1)
@@ -72,23 +91,40 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, n
             num_instances_per_class[zero_indices] = 1
             warnings.warn('One or more classes does not have instances')
         cm = cm / num_instances_per_class[:, np.newaxis]
+        vmax = 1.
+    else:
+        vmax = np.max(cm)
 
     fig = plt.figure(figsize=figsize)
     plt.clf()
     ax = fig.add_subplot(111)
     ax.set_aspect(1)
 
-    sns.heatmap(cm, annot=annot, cmap=cmap, linewidths=linewidths).get_figure()
     if show_yticks:
-        plt.yticks(xrange(len(labels)), labels[::-1], fontsize=ticks_size)
+        yticklabels = labels
     else:
-        plt.yticks([], [])
+        yticklabels = []
+
+    if show_xticks:
+        xticklabels = labels
+    else:
+        xticklabels = []
+
+    ax = sns.heatmap(cm, annot=annot, cmap=cmap, linewidths=linewidths, xticklabels=xticklabels,
+                     yticklabels=yticklabels, vmax=vmax)
+
+    if show_yticks:
+        for ticklabel in ax.get_yaxis().get_ticklabels():
+            ticklabel.set_rotation('horizontal')
+            if ticks_size:
+                ticklabel.set_fontsize(ticks_size)
 
     if show_xticks:
         ax.xaxis.tick_top()
-        plt.xticks(xrange(len(labels)), labels, rotation='vertical', fontsize=ticks_size)
-    else:
-        plt.xticks([], [])
+        for ticklabel in ax.get_xaxis().get_ticklabels():
+            ticklabel.set_rotation('vertical')
+            if ticks_size:
+                ticklabel.set_fontsize(ticks_size)
 
     return fig, ax
 
