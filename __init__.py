@@ -12,6 +12,7 @@ import seaborn as sns
 import sklearn.metrics as metrics
 from IPython.display import display
 from jinja2 import Environment, FileSystemLoader
+from matplotlib.colors import ListedColormap
 from pylab import annotate
 
 PATH = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -125,6 +126,78 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, n
             ticklabel.set_rotation('vertical')
             if ticks_size:
                 ticklabel.set_fontsize(ticks_size)
+
+    return fig, ax
+
+
+def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=None, mask_value=None, ylabel=None,
+                   xlabel=None, yticklabels=True, xticklabels=True, leg_square_size=10, annot=False):
+    fig = plt.figure(figsize=figsize)
+    plt.clf()
+    ax = fig.add_subplot(111)
+    ax.set_aspect(1)
+
+    sequence_ind = np.unique(sequences)
+    # Removing mask value from unique sequences
+    if mask_value:
+        mask_ind = np.argwhere(sequence_ind == mask_value)
+        if len(mask_ind) > 0:
+            sequence_ind = np.delete(sequence_ind, mask_ind)
+
+    if not labels_colors:
+        colors = sns.color_palette("hls", len(sequence_ind))
+        labels_colors = {seq_ind: ("", colors[i]) for i, seq_ind in enumerate(sequence_ind)}
+
+        vmax = sequence_ind[-1]
+        vmin = sequence_ind[0]
+    else:
+        vmax = np.max(labels_colors.keys())
+        vmin = np.min(labels_colors.keys())
+
+    cmap = ListedColormap([color for k, (label, color) in labels_colors.iteritems()])
+
+    sns.set_style("white", {'grid.color': '.9', 'axes.edgecolor': '.2', 'axes.linewidth': 1})
+    if mask_value:
+        ax = sns.heatmap(sequences,
+                         cmap=cmap, cbar=False,
+                         annot=annot,
+                         vmin=vmin, vmax=vmax,
+                         xticklabels=xticklabels,
+                         yticklabels=yticklabels,
+                         mask=sequences == mask_value)
+    else:
+        ax = sns.heatmap(sequences,
+                         cmap=cmap, cbar=False,
+                         annot=annot,
+                         vmin=vmin, vmax=vmax,
+                         xticklabels=xticklabels,
+                         yticklabels=yticklabels)
+    if ylabel:
+        ax.set_ylabel(ylabel)
+    if xlabel:
+        ax.set_xlabel(xlabel)
+
+    def create_proxy(color):
+        line = matplotlib.lines.Line2D([0], [0], linestyle='none', mfc=color,
+                                       mec='black',
+                                       markersize=leg_square_size,
+                                       marker='s', )
+        return line
+
+    proxies = [create_proxy(labels_colors[ind][1]) for ind in sequence_ind]
+
+    if annot:
+        descriptions = ['{} {}'.format(ind, labels_colors[ind][0]) for ind in sequence_ind]
+    else:
+        descriptions = ['{}'.format(labels_colors[ind][0]) for ind in sequence_ind]
+
+    leg = ax.legend(proxies, descriptions, numpoints=1, markerscale=2, frameon=True,
+                    bbox_transform=plt.gcf().transFigure, bbox_to_anchor=(1.1, 0.5), loc=10)
+    leg.get_frame().set_edgecolor('#000000')
+    leg.get_frame().set_linewidth(0)
+    leg.get_frame().set_facecolor('#FFFFFF')
+    if tight_layout:
+        plt.tight_layout()
 
     return fig, ax
 
