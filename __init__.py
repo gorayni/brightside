@@ -131,11 +131,14 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, n
 
 
 def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=None, mask_value=None, ylabel=None,
-                   xlabel=None, yticklabels=True, xticklabels=True, leg_square_size=10, annot=False):
+                   xlabel=None, yticklabels=True, xticklabels=True, leg_square_size=10, annot=False, aspect_ratio=None,
+                   show_box=False, plot_ylabel=None, plot_xlabel=None):
     fig = plt.figure(figsize=figsize)
     plt.clf()
     ax = fig.add_subplot(111)
-    ax.set_aspect(1)
+
+    if aspect_ratio:
+        ax.set_aspect(aspect_ratio)
 
     sequence_ind = np.unique(sequences)
     # Removing mask value from unique sequences
@@ -157,6 +160,11 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
     cmap = ListedColormap([color for k, (label, color) in labels_colors.iteritems()])
 
     sns.set_style("white", {'grid.color': '.9', 'axes.edgecolor': '.2', 'axes.linewidth': 1})
+
+    if xticklabels:
+        if not type(xticklabels):
+            xticklabels = np.linspace(0, sequences.shape[1], xticklabels)
+
     if mask_value:
         ax = sns.heatmap(sequences,
                          cmap=cmap, cbar=False,
@@ -172,6 +180,18 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
                          vmin=vmin, vmax=vmax,
                          xticklabels=xticklabels,
                          yticklabels=yticklabels)
+
+    if show_box:
+        ax.axhline(y=0, color='k', linewidth=2)
+        ax.axhline(y=sequences.shape[0], color='k', linewidth=2)
+        ax.axvline(x=0, color='k', linewidth=2)
+        ax.axvline(x=sequences.shape[1], color='k', linewidth=2)
+
+    if plot_ylabel:
+        plt.ylabel(plot_ylabel, fontweight='bold', fontsize=12)
+    if plot_xlabel:
+        plt.xlabel(plot_xlabel, fontweight='bold', fontsize=12)
+
     if ylabel:
         ax.set_ylabel(ylabel)
     if xlabel:
@@ -192,7 +212,7 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
         descriptions = ['{}'.format(labels_colors[ind][0]) for ind in sequence_ind]
 
     leg = ax.legend(proxies, descriptions, numpoints=1, markerscale=2, frameon=True,
-                    bbox_transform=plt.gcf().transFigure, bbox_to_anchor=(1.1, 0.5), loc=10)
+                    bbox_transform=plt.gcf().transFigure, bbox_to_anchor=(1, 0.5), loc=10)
     leg.get_frame().set_edgecolor('#000000')
     leg.get_frame().set_linewidth(0)
     leg.get_frame().set_facecolor('#FFFFFF')
