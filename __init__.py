@@ -305,11 +305,11 @@ def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plo
 
 
 def plot_accuracy(values, labels=None, iters=None, epochs=None, figsize=None):
-    plot_results(values, labels, iters, epochs, figsize, plot_type='accuracy')
+    return plot_results(values, labels, iters, epochs, figsize, plot_type='accuracy')
 
     
 def plot_loss(values, labels=None, iters=None, epochs=None, figsize=None):
-    plot_results(values, labels, iters, epochs, figsize, plot_type='loss')
+    return plot_results(values, labels, iters, epochs, figsize, plot_type='loss')
 
 
 def print_attribute(tag, value):
