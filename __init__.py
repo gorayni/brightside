@@ -132,13 +132,16 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, n
 
 def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=None, mask_value=None, ylabel=None,
                    xlabel=None, yticklabels=True, xticklabels=True, leg_square_size=10, annot=False, aspect_ratio=None,
-                   show_box=False, plot_ylabel=None, plot_xlabel=None):
+                   show_box=False, plot_ylabel=None, plot_xlabel=None, title=None):
     fig = plt.figure(figsize=figsize)
     plt.clf()
     ax = fig.add_subplot(111)
 
     if aspect_ratio:
         ax.set_aspect(aspect_ratio)
+
+    if title:
+        plt.title(title)
 
     sequence_ind = np.unique(sequences)
     # Removing mask value from unique sequences
