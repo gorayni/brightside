@@ -15,6 +15,9 @@ from jinja2 import Environment, FileSystemLoader
 from matplotlib.colors import ListedColormap
 from pylab import annotate
 
+import pandas as pd
+from pandas import Series
+
 PATH = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 TEMPLATE_ENVIRONMENT = Environment(autoescape=False, loader=FileSystemLoader(PATH), trim_blocks=False)
 
@@ -136,7 +139,7 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
     fig = plt.figure(figsize=figsize)
     plt.clf()
     ax = fig.add_subplot(111)
-    
+
     if title:
         plt.title(title)
 
@@ -144,7 +147,12 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
         ax.set_aspect(aspect_ratio)
 
     if not sequence_ind:
-        sequence_ind = np.unique(sequences)        
+        if isinstance(sequences, pd.DataFrame):
+            sequence_ind = Series(sequences.values.ravel()).unique()
+            sequence_ind = np.sort(sequence_ind)
+        else:
+            sequence_ind = np.unique(sequences)
+
     # Removing mask value from unique sequences
     if mask_value:
         mask_ind = np.argwhere(sequence_ind == mask_value)
@@ -166,6 +174,8 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
     sns.set_style("white", {'grid.color': '.9', 'axes.edgecolor': '.2', 'axes.linewidth': 1})
 
     if xticklabels:
+        if not isinstance(sequences, pd.DataFrame):
+            pass
         if not type(xticklabels):
             xticklabels = np.linspace(0, sequences.shape[1], xticklabels)
 
@@ -266,17 +276,17 @@ def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plo
     else:
         x_value = np.arange(1, len(values) + 1)
         label = u'Time'
-    
+
     if not figsize:
         figsize = (1, 1)
 
     sns.set_style("whitegrid", {'axes.edgecolor': '.1', 'axes.linewidth': 0.8})
     sns.set_palette("muted")
     sns.set_context("notebook", font_scale=1, rc={"lines.linewidth": 1})
-        
+
     fig, ax = plt.subplots(1, 1, figsize=figsize, sharex=True)
     plt.grid(b=True, which='major', color='#555555', linestyle=':', linewidth=0.5)
-    
+
     for i, v in enumerate(values):
         if labels:
             plt.plot(x_value, v, linewidth=1.25, linestyle='-', marker='o', markersize=4, label=labels[i])
@@ -291,10 +301,10 @@ def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plo
         plt.ylabel(u'Accuracy', fontweight='bold', fontsize=12)
         plt.xlabel(label, fontweight='bold', fontsize=12)
         plt.legend(loc=4, fontsize=11, frameon=True)
-        
+
         axes = plt.gca()
         axes.set_aspect(x_value[-1])
-        
+
     elif plot_type == 'loss':
         plt.xlim(x_value[0], x_value[-1])
 
@@ -304,14 +314,14 @@ def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plo
         axes = plt.gca()
         axes.set_aspect(500)
     
-    
+
     return fig, ax
 
 
 def plot_accuracy(values, labels=None, iters=None, epochs=None, figsize=None):
     return plot_results(values, labels, iters, epochs, figsize, plot_type='accuracy')
 
-    
+
 def plot_loss(values, labels=None, iters=None, epochs=None, figsize=None):
     return plot_results(values, labels, iters, epochs, figsize, plot_type='loss')
 
