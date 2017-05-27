@@ -237,22 +237,31 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
 
 
 def plot_datasets_summary(stats, figsize=None, ylabel="Number of Instances", xlabel="Categories", annot_rotation=90,
-                          annot_fontsize=9, axis_fontsize=12):
+                          annot_fontsize=9, axis_fontsize=12, legend=False, width=0.5, annotate_cols=True, title=None,
+                          colormap=None):
     if not figsize:
         figsize = (1, 1)
-
     sns.set_style("whitegrid", {'grid.color': '.9', 'axes.edgecolor': '.2', 'axes.linewidth': 1})
     sns.set_context("notebook", font_scale=1, rc={"lines.linewidth": 1})
 
     fig, ax = plt.subplots(1, 1, figsize=figsize, sharex=True)
 
-    stats.plot(kind='bar', ax=ax, color=[sns.color_palette("PuBu", 10)[-3]], legend=False)
+    if title:
+        plt.title(title)
+
+    if stats.shape[1] == 1:
+        stats.plot(kind='bar', ax=ax, legend=legend, width=width, color=[sns.color_palette("PuBu", 10)[-3]])
+    else:
+        stats.plot(kind='bar', ax=ax, legend=legend, width=width, colormap=colormap)
+
     plt.setp(ax.xaxis.get_majorticklabels(), rotation=annot_rotation, fontsize=axis_fontsize, ha='right')
     plt.setp(ax.yaxis.get_majorticklabels(), fontsize=axis_fontsize)
 
-    images = stats['images'].tolist()
-    for w, k in zip(images, range(len(images))):
-        annotate("{:,d}".format(w), (k, w + 25), ha='center', fontsize=annot_fontsize)
+    if annotate_cols:
+        for i, (index, row) in enumerate(stats.iterrows()):
+            for col in stats.columns.values:
+                annotate("{:,d}".format(row[col]), (i, row[col] + 25), ha='center', fontsize=annot_fontsize)
+        plt.ylim([0, 1.1 * stats.values.max()])
 
     SHIFT = -0.3  # Data coordinates
     for label in ax.xaxis.get_majorticklabels():
@@ -263,7 +272,6 @@ def plot_datasets_summary(stats, figsize=None, ylabel="Number of Instances", xla
     plt.ylabel(ylabel, fontweight='bold', fontsize=12)
     plt.xlabel(xlabel, fontweight='bold', fontsize=12)
     return fig, ax
-
 
 def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plot_type='accuracy'):
     
