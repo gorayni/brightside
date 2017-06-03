@@ -275,14 +275,17 @@ def plot_datasets_summary(stats, figsize=None, ylabel="Number of Instances", xla
 
 def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plot_type='accuracy'):
     
+    if not isinstance(values, list):
+        values = [values]
+
     if iters is not None:
         x_value = iters
         label = u'Iteration'
     elif epochs is not None:
         x_value = epochs
         label = u'Epoch'
-    else:
-        x_value = np.arange(1, len(values) + 1)
+    else:        
+        x_value = np.arange(1, len(values[0]) + 1)
         label = u'Time'
 
     if not figsize:
