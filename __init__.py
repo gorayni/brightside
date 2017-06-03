@@ -260,7 +260,7 @@ def plot_datasets_summary(stats, figsize=None, ylabel="Number of Instances", xla
     if annotate_cols:
         for i, (index, row) in enumerate(stats.iterrows()):
             for col in stats.columns.values:
-                annotate("{:,d}".format(row[col]), (i, row[col] + 25), ha='center', fontsize=annot_fontsize)
+                annotate('{:.0f}'.format(row[col]), (i, row[col] + 25), ha='center', fontsize=annot_fontsize)
         plt.ylim([0, 1.1 * stats.values.max()])
 
     SHIFT = -0.3  # Data coordinates
