@@ -135,7 +135,7 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, n
 
 def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=None, mask_value=None, ylabel=None,
                    xlabel=None, yticklabels=True, xticklabels=True, leg_square_size=10, annot=False, aspect_ratio=None,
-                   show_box=False, plot_ylabel=None, plot_xlabel=None, title=None, sequence_ind=None):
+                   show_box=False, plot_ylabel=None, plot_xlabel=None, title=None, sequence_ind=None, legends=True):
     fig = plt.figure(figsize=figsize)
     plt.clf()
     ax = fig.add_subplot(111)
@@ -152,6 +152,8 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
             sequence_ind = np.sort(sequence_ind)
         else:
             sequence_ind = np.unique(sequences)
+    elif isinstance(sequence_ind, list):
+        sequence_ind = np.asarray(sequence_ind)
 
     # Removing mask value from unique sequences
     if mask_value:
@@ -163,8 +165,8 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
         colors = sns.color_palette("hls", len(sequence_ind))
         labels_colors = {seq_ind: ("", colors[i]) for i, seq_ind in enumerate(sequence_ind)}
 
-        vmax = sequence_ind[-1]
-        vmin = sequence_ind[0]
+        vmax = np.max(sequence_ind)
+        vmin = np.min(sequence_ind)
     else:
         vmax = np.max(labels_colors.keys())
         vmin = np.min(labels_colors.keys())
@@ -218,18 +220,20 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
                                        marker='s', )
         return line
 
-    proxies = [create_proxy(labels_colors[ind][1]) for ind in sequence_ind]
+    if legends:
+        proxies = [create_proxy(labels_colors[ind][1]) for ind in sequence_ind]
 
-    if annot:
-        descriptions = ['{} {}'.format(ind, labels_colors[ind][0]) for ind in sequence_ind]
-    else:
-        descriptions = ['{}'.format(labels_colors[ind][0]) for ind in sequence_ind]
+        if annot:
+            descriptions = ['{} {}'.format(ind, labels_colors[ind][0]) for ind in sequence_ind]
+        else:
+            descriptions = ['{}'.format(labels_colors[ind][0]) for ind in sequence_ind]
 
-    leg = ax.legend(proxies, descriptions, numpoints=1, markerscale=2, frameon=True,
-                    bbox_transform=plt.gcf().transFigure, bbox_to_anchor=(1, 0.5), loc=10)
-    leg.get_frame().set_edgecolor('#000000')
-    leg.get_frame().set_linewidth(0)
-    leg.get_frame().set_facecolor('#FFFFFF')
+        leg = ax.legend(proxies, descriptions, numpoints=1, markerscale=2, frameon=True,
+                        bbox_transform=plt.gcf().transFigure, bbox_to_anchor=(1, 0.5), loc=10)
+        leg.get_frame().set_edgecolor('#000000')
+        leg.get_frame().set_linewidth(0)
+        leg.get_frame().set_facecolor('#FFFFFF')
+
     if tight_layout:
         plt.tight_layout()
 
