@@ -146,7 +146,7 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
     if aspect_ratio:
         ax.set_aspect(aspect_ratio)
 
-    if not sequence_ind:
+    if sequence_ind is None:
         if isinstance(sequences, pd.DataFrame):
             sequence_ind = Series(sequences.values.ravel()).unique()
             sequence_ind = np.sort(sequence_ind)
@@ -278,7 +278,7 @@ def plot_datasets_summary(stats, figsize=None, ylabel="Number of Instances", xla
     return fig, ax
 
 def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plot_type='accuracy'):
-    
+
     if not isinstance(values, list):
         values = [values]
 
@@ -288,7 +288,7 @@ def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plo
     elif epochs is not None:
         x_value = epochs
         label = u'Epoch'
-    else:        
+    else:
         x_value = np.arange(1, len(values[0]) + 1)
         label = u'Time'
 
@@ -328,7 +328,7 @@ def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plo
         plt.legend(loc=1, fontsize=11, frameon=True)
         axes = plt.gca()
         axes.set_aspect(500)
-    
+
 
     return fig, ax
 
