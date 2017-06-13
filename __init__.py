@@ -82,7 +82,7 @@ def map_new_categories(categories, groundtruth, predictions, labels, other_label
 
 
 def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, normalize=True, annot=False, cmap='jet',
-                          ticks_size=None, linewidths=0, show_yticks=True, show_xticks=False):
+                          ticks_size=None, linewidths=0, show_yticks=True, show_xticks=False, cbar=True):
     if not figsize:
         figsize = (5, 5)
 
@@ -115,7 +115,7 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, n
         xticklabels = []
 
     ax = sns.heatmap(cm, annot=annot, cmap=cmap, linewidths=linewidths, xticklabels=xticklabels,
-                     yticklabels=yticklabels, vmax=vmax)
+                     yticklabels=yticklabels, vmax=vmax, cbar=cbar)
 
     if show_yticks:
         for ticklabel in ax.get_yaxis().get_ticklabels():
