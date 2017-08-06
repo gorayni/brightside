@@ -277,36 +277,41 @@ def plot_datasets_summary(stats, figsize=None, ylabel="Number of Instances", xla
     plt.xlabel(xlabel, fontweight='bold', fontsize=12)
     return fig, ax
 
-def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plot_type='accuracy'):
+def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plot_type='accuracy', xlabel=None, subplot=None):
 
     if not isinstance(values, list):
         values = [values]
 
     if iters is not None:
         x_value = iters
-        label = u'Iteration'
+        if not xlabel:
+            xlabel = u'Iteration'
     elif epochs is not None:
         x_value = epochs
-        label = u'Epoch'
+        if not xlabel:
+            xlabel = u'Epoch'
     else:
         x_value = np.arange(1, len(values[0]) + 1)
-        label = u'Time'
+        if not xlabel:
+            xlabel = u'Time'
 
-    if not figsize:
-        figsize = (1, 1)
+    if not subplot:
+        if not figsize:
+            figsize = (1, 1)
+        fig, ax = plt.subplots(1, 1, figsize=figsize, sharex=True)
+    else:
+        fig, ax = subplot
 
     sns.set_style("whitegrid", {'axes.edgecolor': '.1', 'axes.linewidth': 0.8})
     sns.set_palette("muted")
     sns.set_context("notebook", font_scale=1, rc={"lines.linewidth": 1})
 
-    fig, ax = plt.subplots(1, 1, figsize=figsize, sharex=True)
-    plt.grid(b=True, which='major', color='#555555', linestyle=':', linewidth=0.5)
-
+    ax.grid(b=True, which='major', color='#555555', linestyle=':', linewidth=0.5)
     for i, v in enumerate(values):
         if labels:
-            plt.plot(x_value, v, linewidth=1.25, linestyle='-', marker='o', markersize=4, label=labels[i])
+            ax.plot(x_value, v, linewidth=1.25, linestyle='-', marker='o', markersize=4, label=labels[i])
         else:
-            plt.plot(x_value, v, linewidth=1.25, linestyle='-', marker='o', markersize=4)
+            ax.plot(x_value, v, linewidth=1.25, linestyle='-', marker='o', markersize=4)
 
     if plot_type == 'accuracy':
         plt.xlim(x_value[0], x_value[-1])
@@ -314,8 +319,8 @@ def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plo
         plt.yticks(np.linspace(0, 1, 11, endpoint=True))
 
         plt.ylabel(u'Accuracy', fontweight='bold', fontsize=12)
-        plt.xlabel(label, fontweight='bold', fontsize=12)
-        plt.legend(loc=4, fontsize=11, frameon=True)
+        plt.xlabel(xlabel, fontweight='bold', fontsize=12)
+        ax.legend(loc=4, fontsize=11, frameon=True)
 
         axes = plt.gca()
         axes.set_aspect(x_value[-1])
@@ -324,21 +329,20 @@ def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plo
         plt.xlim(x_value[0], x_value[-1])
 
         plt.ylabel(u'Error', fontweight='bold', fontsize=12)
-        plt.xlabel(label, fontweight='bold', fontsize=12)
+        plt.xlabel(xlabel, fontweight='bold', fontsize=12)
         plt.legend(loc=1, fontsize=11, frameon=True)
         axes = plt.gca()
         axes.set_aspect(500)
 
-
     return fig, ax
 
 
-def plot_accuracy(values, labels=None, iters=None, epochs=None, figsize=None):
-    return plot_results(values, labels, iters, epochs, figsize, plot_type='accuracy')
+def plot_accuracy(values, labels=None, iters=None, epochs=None, figsize=None, xlabel=None, subplot=None):
+    return plot_results(values, labels, iters, epochs, figsize, plot_type='accuracy', xlabel=xlabel, subplot=subplot)
 
 
-def plot_loss(values, labels=None, iters=None, epochs=None, figsize=None):
-    return plot_results(values, labels, iters, epochs, figsize, plot_type='loss')
+def plot_loss(values, labels=None, iters=None, epochs=None, figsize=None, xlabel=None, subplot=None):
+    return plot_results(values, labels, iters, epochs, figsize, plot_type='loss', xlabel=xlabel, subplot=subplot)
 
 
 def print_attribute(tag, value):
