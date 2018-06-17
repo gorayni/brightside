@@ -253,7 +253,7 @@ def plot_datasets_summary(stats, figsize=None, ylabel="Number of Instances", xla
     if title:
         plt.title(title)
 
-    if stats.shape[1] == 1:
+    if stats.shape[1] == 1 and not colormap:
         stats.plot(kind='bar', ax=ax, legend=legend, width=width, color=[sns.color_palette("PuBu", 10)[-3]])
     else:
         stats.plot(kind='bar', ax=ax, legend=legend, width=width, colormap=colormap)
