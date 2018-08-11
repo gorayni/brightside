@@ -303,10 +303,14 @@ def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plo
     plt.grid(b=True, which='major', color='#555555', linestyle=':', linewidth=0.5)
 
     for i, v in enumerate(values):
+        v_size = len(v) if type(v) == list else v.size
+        x_value_size = len(x_value) if type(x_value) == list else x_value.size
+        
+        num_values = np.min((v_size, x_value_size))
         if labels:
-            plt.plot(x_value, v, linewidth=1.25, linestyle='-', marker='o', markersize=4, label=labels[i])
+            plt.plot(x_value[:num_values], v[:num_values], linewidth=1.25, linestyle='-', marker='o', markersize=4, label=labels[i])
         else:
-            plt.plot(x_value, v, linewidth=1.25, linestyle='-', marker='o', markersize=4)
+            plt.plot(x_value[:num_values], v[:num_values], linewidth=1.25, linestyle='-', marker='o', markersize=4)
 
     if plot_type == 'accuracy':
         plt.xlim(x_value[0], x_value[-1])
