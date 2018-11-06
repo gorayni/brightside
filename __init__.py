@@ -233,11 +233,13 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
         leg.get_frame().set_edgecolor('#000000')
         leg.get_frame().set_linewidth(0)
         leg.get_frame().set_facecolor('#FFFFFF')
+    else:
+        leg = None
 
     if tight_layout:
         plt.tight_layout()
 
-    return fig, ax
+    return fig, ax, leg
 
 
 def plot_datasets_summary(stats, figsize=None, ylabel="Number of Instances", xlabel="Categories", annot_rotation=90,
