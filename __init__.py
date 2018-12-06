@@ -328,17 +328,12 @@ def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plo
         plt.xlabel(xlabel, fontweight='bold', fontsize=12)
         ax.legend(loc=4, fontsize=11, frameon=True)
 
-        axes = plt.gca()
-        axes.set_aspect(x_value[-1])
-
     elif plot_type == 'loss':
         plt.xlim(x_value[0], x_value[-1])
 
         plt.ylabel(u'Error', fontweight='bold', fontsize=12)
         plt.xlabel(xlabel, fontweight='bold', fontsize=12)
         plt.legend(loc=1, fontsize=11, frameon=True)
-        axes = plt.gca()
-        axes.set_aspect(500)
 
     return fig, ax
 
