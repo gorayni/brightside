@@ -81,8 +81,11 @@ def map_new_categories(categories, groundtruth, predictions, labels, other_label
     return new_groundtruth, new_predictions, new_labels
 
 
-def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, normalize=True, annot=False, cmap='jet',
-                          ticks_size=None, linewidths=0, show_yticks=True, show_xticks=False, cbar=True):
+def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None,
+                          normalize=True, annot=False, cmap=None,
+                          square=False, linecolor='white', ticks_size=None,
+                          linewidths=0, show_yticks=True, show_xticks=False,
+                          cbar=True, cbar_kws=None):
     if not figsize:
         figsize = (5, 5)
 
@@ -99,6 +102,10 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, n
     else:
         vmax = np.max(cm)
 
+    if not cmap:
+        cmap = list(sns.color_palette("RdBu_r", 200).as_hex())
+        cmap = ListedColormap(cmap)
+ 
     fig = plt.figure(figsize=figsize)
     plt.clf()
     ax = fig.add_subplot(111)
@@ -115,7 +122,9 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None, n
         xticklabels = []
 
     ax = sns.heatmap(cm, annot=annot, cmap=cmap, linewidths=linewidths, xticklabels=xticklabels,
-                     yticklabels=yticklabels, vmax=vmax, cbar=cbar)
+                     yticklabels=yticklabels, square=square,
+                     linecolor=linecolor, vmax=vmax, cbar=cbar,
+                     cbar_kws=cbar_kws)
 
     if show_yticks:
         for ticklabel in ax.get_yaxis().get_ticklabels():
