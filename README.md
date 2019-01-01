@@ -42,3 +42,25 @@ plt.savefig('acc_plot.png', format='png', dpi=300)
 ```
 <center><img src="examples/acc_plot.png" height="450"></img></center>
 
+### Confusion matrix plot
+
+Loading predictions and groundtruth into numpy arrays.
+
+```python
+predictions, groundtruth = np.loadtxt('predictions.csv', delimiter=' ', unpack=True)
+labels = np.genfromtxt('labels.txt',dtype='str')
+```
+
+Plotting the confusion matrix
+
+```python
+fig, ax = bs.show_confusion_matrix(predictions, groundtruth, labels,
+                                   figsize=(8,8), annot=False,
+                                   linewidths=0.005, linecolor='gray',
+                                   square=True, show_xticks=True,
+                                   cbar_kws={"shrink": 0.75})
+plt.savefig('cm.png', format='png', dpi=300)
+```
+
+<center><img src="examples/cm.png" height="550"></img></center>
+
