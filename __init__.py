@@ -88,8 +88,12 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None,
                           cbar=True, cbar_kws=None):
     if not figsize:
         figsize = (5, 5)
-
-    cm = metrics.confusion_matrix(true_labels, predicted_labels)
+        
+    if type(true_labels[0]) == type(labels[0]):
+        cm = metrics.confusion_matrix(true_labels, predicted_labels, labels)
+    else:
+        cm = metrics.confusion_matrix(true_labels, predicted_labels, np.arange(np.size(labels)))
+        
     # normalize confusion matrix
     if normalize:
         num_instances_per_class = cm.sum(axis=1)
