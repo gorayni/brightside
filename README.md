@@ -13,6 +13,7 @@ Loading the libraries:
 import brightside as bs
 import matplotlib
 from matplotlib import pyplot as plt
+from scipy import stats
 import numpy as np
 ```
 
@@ -64,3 +65,55 @@ plt.savefig('cm.png', format='png', dpi=300)
 
 <center><img src="examples/cm.png" height="550"></img></center>
 
+### Printing a table on Jupyter
+
+Making an array of random numbers.
+
+```python
+np.random.seed(42)
+rand_numbers = np.random.uniform(0,1,100)
+```
+
+Showing the table 
+
+```python
+bs.print_table('Statistics', [('Min:', rand_numbers.min()),
+('Max:', rand_numbers.max()),
+('Mean:', rand_numbers.mean()),
+('Median:', np.median(rand_numbers)),
+('StdDev:', rand_numbers.std()),
+('Mode:', stats.mode(rand_numbers).mode[0]),
+('Distinct:', np.size(np.unique(rand_numbers)))])
+```
+
+<b>Statistics</b>
+<table>
+  <tr>
+    <td><b>Min:</b></td>
+    <td>0.005522117123602399</td>    
+  </tr>
+  <tr>
+    <td><b>Max:</b></td>
+    <td>0.9868869366005173</td>    
+  </tr>
+  <tr>
+    <td><b>Mean:</b></td>
+    <td>0.47018074337820936</td>    
+  </tr>
+  <tr>
+    <td><b>Median:</b></td>
+    <td>0.4641424546894926</td>    
+  </tr>
+  <tr>
+    <td><b>StdDev:</b></td>
+    <td>0.29599822663249037</td>    
+  </tr>
+  <tr>
+    <td><b>Mode:</b></td>
+    <td>0.005522117123602399</td>    
+  </tr>
+  <tr>
+    <td><b>Distinct:</b></td>
+    <td>100</td>    
+  </tr>
+</table>

@@ -2,21 +2,21 @@ from __future__ import division
 
 import inspect
 import os
+import sys
 import types
 import warnings
 
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 import sklearn.metrics as metrics
 from IPython.display import display
 from jinja2 import Environment, FileSystemLoader
 from matplotlib.colors import ListedColormap
-from pylab import annotate
-
-import pandas as pd
 from pandas import Series
+from pylab import annotate
 
 PATH = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 TEMPLATE_ENVIRONMENT = Environment(autoescape=False, loader=FileSystemLoader(PATH), trim_blocks=False)
@@ -88,12 +88,12 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None,
                           cbar=True, cbar_kws=None):
     if not figsize:
         figsize = (5, 5)
-        
+
     if type(true_labels[0]) == type(labels[0]):
         cm = metrics.confusion_matrix(true_labels, predicted_labels, labels)
     else:
         cm = metrics.confusion_matrix(true_labels, predicted_labels, np.arange(np.size(labels)))
-        
+
     # normalize confusion matrix
     if normalize:
         num_instances_per_class = cm.sum(axis=1)
@@ -109,7 +109,7 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None,
     if not cmap:
         cmap = list(sns.color_palette("RdBu_r", 200).as_hex())
         cmap = ListedColormap(cmap)
- 
+
     fig = plt.figure(figsize=figsize)
     plt.clf()
     ax = fig.add_subplot(111)
@@ -292,8 +292,9 @@ def plot_datasets_summary(stats, figsize=None, ylabel="Number of Instances", xla
     plt.xlabel(xlabel, fontweight='bold', fontsize=12)
     return fig, ax
 
-def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plot_type='accuracy', xlabel=None, subplot=None):
 
+def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plot_type='accuracy', xlabel=None,
+                 subplot=None):
     if not isinstance(values, list):
         values = [values]
 
@@ -325,10 +326,11 @@ def plot_results(values, labels=None, iters=None, epochs=None, figsize=None, plo
     for i, v in enumerate(values):
         v_size = len(v) if type(v) == list else v.size
         x_value_size = len(x_value) if type(x_value) == list else x_value.size
-        
+
         num_values = np.min((v_size, x_value_size))
         if labels:
-            plt.plot(x_value[:num_values], v[:num_values], linewidth=1.25, linestyle='-', marker='o', markersize=4, label=labels[i])
+            plt.plot(x_value[:num_values], v[:num_values], linewidth=1.25, linestyle='-', marker='o', markersize=4,
+                     label=labels[i])
         else:
             plt.plot(x_value[:num_values], v[:num_values], linewidth=1.25, linestyle='-', marker='o', markersize=4)
 
@@ -365,3 +367,14 @@ def print_attribute(tag, value):
 
 def print_bold(value):
     display(Bold(value))
+
+
+def print_table(title, labels_and_values):
+
+    if isinstance(labels_and_values, dict):
+        if sys.version_info >= (3, 0):
+            labels_and_values = [(l, v) for l, v in labels_and_values.items()]
+        else:
+            labels_and_values = [(l, v) for l, v in labels_and_values.iteritems()]
+
+    display(LabelValueTable(title, labels_and_values))
