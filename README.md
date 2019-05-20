@@ -117,3 +117,45 @@ bs.print_table('Statistics', [('Min:', rand_numbers.min()),
     <td>100</td>    
   </tr>
 </table>
+
+### Plotting a sequence
+
+Loading the sequential data
+
+```python
+sequences = np.genfromtxt('sequences.csv', delimiter=' ', dtype='str')
+labels = np.genfromtxt('activity_labels.txt', delimiter=',', dtype='str')
+```
+
+Preparing the sequences
+
+```python
+import itertools
+import pandas as pd
+
+def time2ind(time):
+    hour, minute, second = [int(time[i:i + 2]) for i in range(0, 6, 2)]
+    index = 120 * hour + 2 * minute + (1 if second > 30 else 0)
+    return index
+
+days = -np.ones((2, 2880), np.int)
+dates = ['2019-05-20', '2019-05-21']
+for date, time, label in sequences:
+    index = time2ind(time)
+    i = 0 if date == '2019-05-20' else 1
+    days[i, index] = int(label)
+
+times = list()
+for time in itertools.product(range(24), range(60), range(0, 60, 30)):
+    times.append(':'.join([str(t).zfill(2) for t in time]))
+
+colors = sns.color_palette("hls", len(labels))
+labels_colors = {i: (label, colors[i]) for i, label in enumerate(labels)}
+
+dataframe = pd.DataFrame(data=days, index=dates, columns=times)
+fig, ax, leg = bs.show_sequences(dataframe, labels_colors, figsize=(8, 1.5), xticklabels=100, mask_value=-1,
+                                 leg_square_size=7, show_box=True, plot_xlabel='Time', plot_ylabel='Date')
+plt.savefig('sequences.png', format='png', dpi=300)
+```
+
+<center><img src="examples/sequences.png" height="250"></img></center>

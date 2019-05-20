@@ -22,7 +22,7 @@ PATH = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 TEMPLATE_ENVIRONMENT = Environment(autoescape=False, loader=FileSystemLoader(PATH), trim_blocks=False)
 
 
-class Attribute():
+class Attribute:
     def __init__(self, attribute, value):
         self.html = '<b>' + str(attribute) + ' </b>' + str(value)
         self.latex = '\\textbf{' + str(attribute) + '} ' + str(value)
@@ -34,7 +34,7 @@ class Attribute():
         return self.latex
 
 
-class LabelValueTable():
+class LabelValueTable:
     def __init__(self, title, labels_and_values):
         html_template = TEMPLATE_ENVIRONMENT.get_template('label_value_table_template.html')
         latex_template = TEMPLATE_ENVIRONMENT.get_template('label_value_table_template.tex')
@@ -49,7 +49,7 @@ class LabelValueTable():
         return self.latex
 
 
-class Bold():
+class Bold:
     def __init__(self, value):
         self.html = '<b>' + str(value) + ' </b>'
         self.latex = '\\textbf{' + str(value) + '} '
@@ -148,7 +148,8 @@ def show_confusion_matrix(true_labels, predicted_labels, labels, figsize=None,
 
 def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=None, mask_value=None, ylabel=None,
                    xlabel=None, yticklabels=True, xticklabels=True, leg_square_size=10, annot=False, aspect_ratio=None,
-                   show_box=False, plot_ylabel=None, plot_xlabel=None, title=None, sequence_ind=None, legends=True):
+                   show_box=False, plot_ylabel=None, plot_xlabel=None, title=None, sequence_ind=None, legends=True,
+                   twin_yticklabels=None):
     fig = plt.figure(figsize=figsize)
     plt.clf()
     ax = fig.add_subplot(111)
@@ -184,7 +185,10 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
         vmax = np.max(labels_colors.keys())
         vmin = np.min(labels_colors.keys())
 
-    cmap = ListedColormap([color for k, (label, color) in labels_colors.iteritems()])
+    if sys.version_info >= (3, 0):
+        cmap = ListedColormap([color for k, (label, color) in labels_colors.items()])
+    else:
+        cmap = ListedColormap([color for k, (label, color) in labels_colors.iteritems()])
 
     sns.set_style("white", {'grid.color': '.9', 'axes.edgecolor': '.2', 'axes.linewidth': 1})
 
@@ -248,6 +252,12 @@ def show_sequences(sequences, labels_colors=None, figsize=None, tight_layout=Non
         leg.get_frame().set_facecolor('#FFFFFF')
     else:
         leg = None
+
+    if twin_yticklabels:
+        ax2 = ax.twinx()
+        num_sequences = sequences.shape[0]
+        plt.yticks(np.arange(1 / (2 * num_sequences), 1, step=1 / num_sequences))
+        ax2.set_yticklabels(reversed(twin_yticklabels))
 
     if tight_layout:
         plt.tight_layout()
@@ -370,7 +380,6 @@ def print_bold(value):
 
 
 def print_table(title, labels_and_values):
-
     if isinstance(labels_and_values, dict):
         if sys.version_info >= (3, 0):
             labels_and_values = [(l, v) for l, v in labels_and_values.items()]
